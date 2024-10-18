@@ -64,11 +64,13 @@ GET     http://127.0.0.1:8080/task?user_id=sus123
 
 POST    http://127.0.0.1:8080/task              # inserting task in task_table
 {
-    "task_name":"Play chess",
+    "task_name":"Play volly",
     "task_priority":"Medium",
     "task_creator":"tamal123",
-    "task_comment":"At college",
-    "task_parent":null
+    "task_comment":"At college IIIT KALYANI",
+    "task_parent":null,
+    "task_end":"2024-10-19 09:35:09",
+    "user_password":"tamal123"
 }
 
 POST    http://127.0.0.1:8080/task              # inserting subtask in task_table  parent=task_id
@@ -77,23 +79,25 @@ POST    http://127.0.0.1:8080/task              # inserting subtask in task_tabl
     "task_priority":"Medium",
     "task_creator":"tamal123",
     "task_comment":"At college",
-    "task_parent":1
+    "task_parent":1,
+    "user_password":"tamal123"
 }
 
-PUT     http://127.0.0.1:8080/task              # editing task/subtask of task_table required=task_id
+PUT     http://127.0.0.1:8080/task              # editing task/subtask of task_table required=task_id,user_password
 {
     "task_id":24,                               # mandatory
+    "user_password":"tamal123",                 # mandatory
     "task_name":"Play chess in IIIT Kalyani"    # optional
 },
 {
-    "task_id":24,                               #mandatory
-    "task_name":"Play chess in college",
-    "task_priority":"Low",
-    "task_iscollaborative":false,
-    "task_end":null,
-    "task_status":"Active",
-    "task_comment":"At college",
-    "task_parent":null
+    "task_id":25,                               # mandatory
+    "task_name":"Play volly",
+    "task_priority":"Medium",
+    "task_creator":"tamal123",
+    "task_comment":"At college IIIT KALYANI",
+    "task_parent":null,
+    "task_end":"2024-10-19 09:35:09",
+    "user_password":"tamal123"                  # mandatory
 }
 
 DELETE  http://127.0.0.1:8080/task              # deleting task sub task
