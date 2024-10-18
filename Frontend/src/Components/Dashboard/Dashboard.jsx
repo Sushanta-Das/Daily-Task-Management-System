@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import { Currenttasks } from "./Currenttasks";
+import { CurrentTasks } from "./CurrentTasks";
 import { PreviousTasks } from "./PreviousTasks";
 import "./dashboard.css";
 function CustomTabPanel(props) {
@@ -38,7 +38,7 @@ function a11yProps(index) {
 
 export default function Dashboard() {
   const [value, setValue] = React.useState(0);
-  const [tasks, setTasks] = useState([{ task: "Task 1" }]);
+  const [tasks, setTasks] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -58,7 +58,7 @@ export default function Dashboard() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <Currenttasks tasks={tasks} setTasks={setTasks} />
+        <CurrentTasks tasks={tasks} setTasks={setTasks} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <PreviousTasks tasks={tasks} />

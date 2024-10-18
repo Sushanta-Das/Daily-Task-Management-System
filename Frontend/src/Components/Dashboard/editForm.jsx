@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TextField, Button } from "@mui/material";
 import { useState, useId } from "react";
 import dayjs, { Dayjs } from "dayjs";
@@ -10,39 +10,41 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import { TimePicker } from "@mui/lab";
-export const AddTask = ({ tasks, setTasks }) => {
-  // const [value, setValue] =
-  //   (React.useState < Dayjs) | (null > dayjs("2022-04-17T15:30"));
-  // const [selectedValue, setSelectedValue] = useState("");
-  const [task_name, setTaskName] = useState("");
-  const [task_description, setTaskDescription] = useState("");
-  const [task_deadline, setTaskDeadline] = useState("");
-  const [task_priority, setTaskPriority] = useState("");
-  const [task_status, setTaskStatus] = useState(useId());
-  const [taskId, setTaskId] = useState(tasks.length);
-  const [task_created_at, setTaskCreatedAt] = useState("");
-  const changeTaskId = () => {
-    setTaskId(taskId + 1);
-  };
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
-  const createTask = () => {
-    setTasks([
-      ...tasks,
-      {
-        task_id: taskId,
-        task_name: task_name,
+export const EditForm = ({ taskId, tasks, setTasks }) => {
+  const [taskName, setTaskName] = useState("");
+  const [taskDeadline, setTaskDeadline] = useState(null);
+  const [taskPriority, setTaskPriority] = useState("");
+  const [taskStatus, setTaskStatus] = useState("");
+  const [taskCreatedAt, setTaskCreatedAt] = useState("");
+  useEffect(() => {
+    const task = tasks.find((task) => task.task_id === taskId);
+    setTaskName(task.task_name);
+    setTaskDeadline(task.task_deadline);
+    setTaskPriority(task.task_priority);
+    setTaskStatus(task.task_status);
+    setTaskCreatedAt(task.task_created_at);
+  }, []);
 
-        task_deadline: task_deadline,
-        task_priority: task_priority,
-        task_status: "pending",
-        // task_id: ,
-        task_created_at: task_created_at,
-      },
-    ]);
-    // changeTaskId();
+  const updateTask = () => {
+    // Use map to create a new array with the updated object
+    const updatedTasks = tasks.map((task) => {
+      if (task.task_id === taskId) {
+        // Create a new object with the updated name
+        return {
+          ...task,
+          task_name: taskName,
+          task_deadline: taskDeadline,
+          task_priority: taskPriority,
+        };
+      }
+      // Return the object as is if no update is needed
+      return task;
+    });
+
+    // Update the state with the new array
+    setTasks(updatedTasks);
   };
+
   return (
     <div className="form-container">
       <TextField
@@ -50,7 +52,7 @@ export const AddTask = ({ tasks, setTasks }) => {
         label="Title"
         variant="standard"
         sx={{ minWidth: "20vw" }}
-        value={task_name}
+        value={taskName}
         onChange={(e) => setTaskName(e.target.value)}
       />
       {/* <TextField id="standard-basic" label="Desciption" variant="standard" /> */}
@@ -59,7 +61,8 @@ export const AddTask = ({ tasks, setTasks }) => {
           <DemoItem label="Deadline">
             <div className="dateTimeSize">
               <DateTimePicker
-                placeholder="MM/DD/YYYY hh:mm AM"
+                // placeholder="MM/DD/YYYY hh:mm AM"
+                value={taskDeadline}
                 onChange={(newValue) =>
                   // console.log(newValue.format("YYYY-MM-DD HH:mm:ss"))
                   setTaskDeadline(newValue)
@@ -75,7 +78,7 @@ export const AddTask = ({ tasks, setTasks }) => {
         <Select
           labelId="select-label"
           id="select"
-          value={task_priority}
+          value={taskPriority}
           label="Select an option"
           onChange={(e) => setTaskPriority(e.target.value)}
           displayEmpty
@@ -94,10 +97,10 @@ export const AddTask = ({ tasks, setTasks }) => {
         variant="contained"
         color="success"
         onClick={() => {
-          createTask();
+          updateTask();
         }}
       >
-        Add
+        Edit
       </Button>
     </div>
   );

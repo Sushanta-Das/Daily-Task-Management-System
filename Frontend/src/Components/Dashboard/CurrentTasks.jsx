@@ -5,7 +5,8 @@ import { Button, Box, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-export const Currenttasks = ({ tasks, setTasks }) => {
+import TaskList from "./TaskList";
+export const CurrentTasks = ({ tasks, setTasks }) => {
   const [open, setOpen] = React.useState(false);
   const style = {
     position: "absolute",
@@ -55,7 +56,8 @@ export const Currenttasks = ({ tasks, setTasks }) => {
           </Box>
         </Modal>
 
-        <Tasks tasks={tasks} setTasks={setTasks} />
+        {/* <Tasks tasks={tasks} setTasks={setTasks} /> */}
+        <TaskList tasks={tasks} setTasks={setTasks} />
       </div>
     )
   );
