@@ -17,18 +17,17 @@ def get_table(user_id):
 
 ## get & update User log in ,sign up , update details
 
-@app.route('/signin')
+@app.route('/signin',methods=["POST"])  #    POST     http://127.0.0.1:8080/signin
 def user_signin():
-    data={}
-    data["user_id_email"],data["user_password"] = request.args.get('user'),request.args.get('password')
-    return verify_user(data) # sending json data
+    form_data = request.json
+    return sign_in(form_data) # sending json data
 
-@app.route('/signup',methods=["POST"])
+@app.route('/signup',methods=["POST"]) #    POST     http://127.0.0.1:8080/signup 
 def user_signup():
     form_data = request.json
     return create_new_user(form_data)
 
-@app.route('/update',methods=["POST"])
+@app.route('/user_update',methods=["PUT"])  #    PUT     http://127.0.0.1:8080/user_update
 def update_user_details():
     form_data = request.json
     return update_existing_user_details(form_data)

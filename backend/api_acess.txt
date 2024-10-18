@@ -1,0 +1,41 @@
+////        User access api
+
+/signin
+POST http://127.0.0.1:8080/signin
+{
+    "user_email":"email  ",
+    "user_id":"root",                           # either id or email along password is required
+    "user_password":123
+}
+
+/signup
+POST http://127.0.0.1:8080/signup
+{
+    "user_id" : "doremon2",
+    "user_email" : "doracake@japan.com2",
+    "user_password" : "1234567890  ",
+    "user_name" : "Doremon",
+    "user_age" : 18,
+    "user_gender" :"Male"
+}
+
+/user_update
+PUT http://127.0.0.1:8080/user_update           # no password changing
+{
+    "user_id" : "doremon2",
+    "user_email" : "doracake@japan.com2",
+    "user_password" : "1234567890",             # active password
+    "user_name" : "Doremon new",
+    "user_age" : 18,
+    "user_gender" :"Male"
+}
+PUT http://127.0.0.1:8080/user_update           # password changing
+{
+    "user_id" : "doremon2",
+    "user_email" : "doracake@japan.com2",
+    "user_password" : "1234567890",             # active/current password
+    "user_name" : "Doremon new",                # new password
+    "user_age" : 18,
+    "user_gender" :"Male",
+    "user_new_password":"123"
+}

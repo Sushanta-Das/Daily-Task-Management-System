@@ -2,18 +2,25 @@ from database.connect_db import *
 from flask import jsonify
 USER_TABLE=" ut.user_id,ut.user_email,ut.user_name,ut.user_age,ut.user_gender "
 
-def verify_user(data): # sign in
-    for field in ["user_id_email","user_password"]:
-        if field not in data:
-            return jsonify(rows = {
-                    "status":400,
-                    "message": f"'{field}' is required.",
-                    "return": []
-                    }), 400
+def sign_in(data):
+    if "user_password" in data.keys() and data['user_password'].strip():
+        password=data['user_password'].strip()
+        if "user_id" in data.keys() and data['user_id'].strip():
+            return verify_user(data['user_id'],password)
+        elif "user_email" in data.keys() and data["user_email"].strip():
+            return verify_user(data["user_email"],password)
+    return jsonify({
+        "status":400,
+        "message": f"user_id/user_email and user_password is required.",
+        "return": []
+    }),400
+    
+
+def verify_user(user,password): # sign in
     conn=create_connection()
     cursor=conn.cursor()
     try:
-        user_id_email,user_password=data["user_id_email"].strip(),data["user_password"].strip()
+        user_id_email,user_password=user.strip(),password.strip()
         query=f"""SELECT {USER_TABLE} FROM user_table as ut 
                 WHERE user_password=%s and (user_id=%s or user_email=%s);"""
         cursor.execute(query,(user_password,user_id_email,user_id_email,))
@@ -70,23 +77,25 @@ def create_new_user(data):
 def update_existing_user_details(data):
 
     required_fields = ['user_id', 'user_email', 'user_password', 'user_name', 'user_age', 'user_gender']
+
     for field in required_fields:
         if field not in data:
             return jsonify({"status":400,"message": f"'{field}' is required.","return":[]}), 400
-        
+    
     id = data['user_id'].strip()
     email = data['user_email'].strip()
     current_password = data['user_password'].strip()
     name = data['user_name'].strip()
     age = data['user_age']
     gender = data['user_gender'].strip()
+    
+    _,status_code=verify_user(id,current_password)
 
     if "user_new_password" not in data.keys() or not data['user_new_password']:
         new_password=current_password
     else:
         new_password=data['user_new_password'].strip()
     
-    _,status_code=verify_user(id,current_password)
 
     if status_code!=200:    # unable to verify
         return jsonify({"status":401,"message":"un-authorized trial , account not updated.","return":[]}),400
