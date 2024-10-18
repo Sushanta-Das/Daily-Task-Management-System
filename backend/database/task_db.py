@@ -39,10 +39,12 @@ def get_user_tasks(user_id):
 def task_subtask_table_entry(data):
     REQUIRED_TASK_FIELD=('task_name','task_priority',
                     "task_creator",
-                    "task_comment","task_parent")
+                    "task_comment","task_parent",
+                    "task_end","user_password")
     ADD_TASK_DB=""" task_name, task_priority,
                     task_creator,
-                    task_comment ,task_parent """
+                    task_comment ,task_parent,
+                    task_end"""
     
     for field in REQUIRED_TASK_FIELD:
         if field not in data:
@@ -50,12 +52,17 @@ def task_subtask_table_entry(data):
     name,priority=data["task_name"],data["task_priority"]
     creator=data["task_creator"].strip()
     comment,parent=data["task_comment"],data["task_parent"]
+    end,password=data["task_end"],data["user_password"]
+
+    res,status_code=verify_user(creator,password)
+    if status_code !=200: # invalid acess
+        return res,status_code
 
     conn=create_connection()
     cursor=conn.cursor()
     try:
-        query=f"""INSERT INTO task_table ({ADD_TASK_DB}) VALUES (%s,%s,%s,%s,%s);"""
-        cursor.execute(query,(name,priority,creator,comment,parent,))
+        query=f"""INSERT INTO task_table ({ADD_TASK_DB}) VALUES (%s,%s,%s,%s,%s,%s);"""
+        cursor.execute(query,(name,priority,creator,comment,parent,end,))
         conn.commit()
         task_id=cursor.lastrowid
         cursor.execute(f"SELECT {TASK_TABLE} from task_table as tt WHERE tt.task_id=%s",(task_id,))
@@ -96,8 +103,10 @@ def task_subtask_table_edit(data):
     cursor=conn.cursor()
     if "task_id" not in data or not data["task_id"]:
         return jsonify({"error": f"task_id is required."}), 400
+    elif "user_password" not in data or not data["user_password"].strip():
+        return jsonify({"error": f"user_password is required."}), 400
     else:
-        id=data["task_id"]
+        id,password=data["task_id"],data["user_password"].strip()
         cursor.execute(f"SELECT {EDIT_TASK_DB} FROM task_table WHERE task_id=%s;",(id,))
         rows=cursor.fetchall()[0]
 
@@ -121,6 +130,11 @@ def task_subtask_table_edit(data):
     end,executor,status=data["task_end"],data["task_executor"],data["task_status"]
     comment,parent=data["task_comment"],data["task_parent"]
 
+    
+    res,status_code=verify_user(creator,password) #     user authentication
+    if status_code !=200: # invalid acess
+        return res,status_code
+    
     try:
         update = "task_name = %s, task_priority = %s, task_iscollaborative = %s, task_end = %s, task_executor = %s, task_status = %s, task_comment = %s, task_parent = %s"
 
