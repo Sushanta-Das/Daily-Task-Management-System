@@ -179,11 +179,11 @@ def get_task_subtasks(task_id):
 def delete_task_subtask(data): # need : task_id, user_id (of current user)
     conn=create_connection()
     cursor=conn.cursor()
-    for field in ("task_id","user_id"):
+    for field in ("task_id","user_id","user_password"):
         if field not in data:
             return jsonify({"error": f"'{field}' is required."}), 400
     try:
-        id,curr_user=data["task_id"],data["user_id"].strip()
+        id,curr_user,password=data["task_id"],data["user_id"].strip(),data["user_password"].strip()
         cursor.execute("SELECT task_id,task_name,task_creator,task_parent from task_table WHERE task_id=%s;",(id,))
         rows=cursor.fetchall()
         if rows:
@@ -191,28 +191,30 @@ def delete_task_subtask(data): # need : task_id, user_id (of current user)
             creator,parent=rows[-2],rows[-1]
         else:return jsonify({
         "status":400,
-        "message": "row not found.",
+        "message": "task not found.",
         "return": []
         }),400
 
         if curr_user==creator:
-            if parent : # is a subtask/child of a parent
-                cursor.execute("DELETE from  task_subtask_joiner WHERE subtask_id=%s;",(id,))
+            _,status_code=verify_user(curr_user,password)
+            if status_code==200:
+                if parent : # is a subtask/child of a parent
+                    cursor.execute("DELETE from  task_subtask_joiner WHERE subtask_id=%s;",(id,))
+                    conn.commit()
+                    msg="deleted from task_subtask_joiner and "
+                else:
+                    cursor.execute("DELETE from  user_task_joiner WHERE user_id=%s and task_id=%s;",(creator,id,))
+                    conn.commit()
+                    msg="deleted from user_task_joiner and "
+                cursor.execute("DELETE from  task_table WHERE task_id=%s;",(id,))
                 conn.commit()
-                msg="deleted from task_subtask_joiner and "
-            else:
-                cursor.execute("DELETE from  user_task_joiner WHERE user_id=%s and task_id=%s;",(creator,id,))
-                conn.commit()
-                msg="deleted from user_task_joiner and "
-            cursor.execute("DELETE from  task_table WHERE task_id=%s;",(id,))
-            conn.commit()
-            return jsonify({
-        "status":200,
-        "message": msg+"task row deleted successfully.",
-        "return": rows
-        }),200
-        else:
-            return jsonify({
+                return jsonify({
+                "status":200,
+                "message": msg+"task row deleted successfully.",
+                "return": rows
+                }),200
+            
+        return jsonify({
         "status":401,
         "message": "unautorized action terminated.",
         "return": []

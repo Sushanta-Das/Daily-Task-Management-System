@@ -1,4 +1,19 @@
+////        To create database use ./database/create_database.sql
 ////        User access api
+
+## RESPONSE Format
+{
+    "message": "deleted from task_subtask_joiner and task row deleted successfully.",
+    "return": [
+        22,
+        "Play chess",
+        "sus123",
+        1
+    ],
+    "status": 200
+}
+
+## QUERY Format
 
 /signin
 POST http://127.0.0.1:8080/signin
@@ -39,3 +54,55 @@ PUT http://127.0.0.1:8080/user_update           # password changing
     "user_gender" :"Male",
     "user_new_password":"123"
 }
+
+
+
+////        Task acess api
+
+/task
+GET     http://127.0.0.1:8080/task?user_id=sus123
+
+POST    http://127.0.0.1:8080/task              # inserting task in task_table
+{
+    "task_name":"Play chess",
+    "task_priority":"Medium",
+    "task_creator":"tamal123",
+    "task_comment":"At college",
+    "task_parent":null
+}
+
+POST    http://127.0.0.1:8080/task              # inserting subtask in task_table  parent=task_id
+{
+    "task_name":"Play chess",
+    "task_priority":"Medium",
+    "task_creator":"tamal123",
+    "task_comment":"At college",
+    "task_parent":1
+}
+
+PUT     http://127.0.0.1:8080/task              # editing task/subtask of task_table required=task_id
+{
+    "task_id":24,                               # mandatory
+    "task_name":"Play chess in IIIT Kalyani"    # optional
+},
+{
+    "task_id":24,                               #mandatory
+    "task_name":"Play chess in college",
+    "task_priority":"Low",
+    "task_iscollaborative":false,
+    "task_end":null,
+    "task_status":"Active",
+    "task_comment":"At college",
+    "task_parent":null
+}
+
+DELETE  http://127.0.0.1:8080/task              # deleting task sub task
+{
+    "user_id" : "sus123",
+    "user_password":"sus123",
+    "task_id":22
+}
+
+/subtask
+GET     http://127.0.0.1:8080/subtask?task_id=3
+
