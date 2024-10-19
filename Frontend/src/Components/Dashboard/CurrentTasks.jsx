@@ -6,7 +6,7 @@ import Add from "@mui/icons-material/Add";
 import { Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import TaskList from "./TaskList";
-export const CurrentTasks = ({ tasks, setTasks }) => {
+export const CurrentTasks = ({ tasks, setTasks, user }) => {
   const [open, setOpen] = React.useState(false);
   const style = {
     position: "absolute",
@@ -52,12 +52,19 @@ export const CurrentTasks = ({ tasks, setTasks }) => {
               Add Task
             </Typography>
 
-            <AddTask tasks={tasks} setTasks={setTasks} />
+            <AddTask
+              tasks={tasks}
+              setTasks={setTasks}
+              setOpen={setOpen}
+              user={user}
+            />
           </Box>
         </Modal>
+        <Typography id="modal-title" variant="h7" component="h2">
+          All Tasks ({tasks.length})
+        </Typography>
 
-        {/* <Tasks tasks={tasks} setTasks={setTasks} /> */}
-        <TaskList tasks={tasks} setTasks={setTasks} />
+        <TaskList tasks={tasks} setTasks={setTasks} user={user} />
       </div>
     )
   );

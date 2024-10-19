@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -39,6 +39,30 @@ function a11yProps(index) {
 export default function Dashboard() {
   const [value, setValue] = React.useState(0);
   const [tasks, setTasks] = useState([]);
+  const base = "http://127.0.0.1:8080";
+  const [user, setUser] = useState({
+    user_email: "sushanta@gmail.com",
+    user_id: "sus123",
+    user_password: "sus123",
+  });
+
+  useEffect(() => {
+    // Simulate fetching tasks from a backend API
+    async function fetchTasks() {
+      try {
+        // Replace with actual fetch request to your backend
+        const response = await fetch(`${base}/task?user_id=sus123`);
+
+        const data = await response.json();
+        console.log(data);
+        setTasks(data); // Assume the backend returns an array of tasks
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+      }
+    }
+
+    fetchTasks();
+  }, [user]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -58,7 +82,7 @@ export default function Dashboard() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <CurrentTasks tasks={tasks} setTasks={setTasks} />
+        <CurrentTasks tasks={tasks} setTasks={setTasks} user={user} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <PreviousTasks tasks={tasks} />

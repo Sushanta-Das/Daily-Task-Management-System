@@ -13,7 +13,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { EditTask } from "./edittask";
 import { DeleteTask } from "./deleteTask";
-export default function TaskList({ tasks, setTasks }) {
+export default function TaskList({ tasks, setTasks, user }) {
   const firstUpdate = useRef(true);
   const handleClick = (event, task_id) => {
     setAnchorEl(event.currentTarget);
@@ -56,7 +56,7 @@ export default function TaskList({ tasks, setTasks }) {
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {tasks.length > 0 &&
         tasks.map((task) => {
-          const labelId = `checkbox-list-label-${task}`;
+          const labelId = `checkbox-list-label-${task.task_id}`;
 
           return (
             <div key={task.task_id}>
@@ -72,10 +72,8 @@ export default function TaskList({ tasks, setTasks }) {
                 }
                 disablePadding
               >
-                <ListItemText
-                  id={labelId}
-                  primary={`Line item ${task.task_name}`}
-                />
+                <ListItemText id={labelId} primary={` ${task.task_name}`} />
+                {task.task_end}
               </ListItem>
               <Divider />
               <Menu
@@ -113,7 +111,13 @@ export default function TaskList({ tasks, setTasks }) {
         tasks={tasks}
         setTasks={setTasks}
       />
-      <DeleteTask openDelete={openDelete} setOpenDelete={setOpenDelete} />
+      <DeleteTask
+        openDelete={openDelete}
+        setOpenDelete={setOpenDelete}
+        taskId={taskId}
+        tasks={tasks}
+        setTasks={setTasks}
+      />
     </List>
   );
 }

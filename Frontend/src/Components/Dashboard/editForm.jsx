@@ -10,7 +10,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import { TimePicker } from "@mui/lab";
-export const EditForm = ({ taskId, tasks, setTasks }) => {
+export const EditForm = ({ taskId, tasks, setTasks, user }) => {
   const [taskName, setTaskName] = useState("");
   const [taskDeadline, setTaskDeadline] = useState(null);
   const [taskPriority, setTaskPriority] = useState("");
@@ -19,13 +19,25 @@ export const EditForm = ({ taskId, tasks, setTasks }) => {
   useEffect(() => {
     const task = tasks.find((task) => task.task_id === taskId);
     setTaskName(task.task_name);
-    setTaskDeadline(task.task_deadline);
+    setTaskDeadline(task.task_end);
     setTaskPriority(task.task_priority);
     setTaskStatus(task.task_status);
     setTaskCreatedAt(task.task_created_at);
   }, []);
-
+  const validateForm = () => {
+    if (taskName === "") {
+      alert("Please enter a task name");
+      return false;
+    } else if (taskDeadline === null) {
+      alert("Please enter a deadline");
+      return false;
+    } else if (taskPriority === "") {
+      alert("Please enter a priority");
+      return false;
+    } else return true;
+  };
   const updateTask = () => {
+    if (!validateForm()) return;
     // Use map to create a new array with the updated object
     const updatedTasks = tasks.map((task) => {
       if (task.task_id === taskId) {
@@ -33,7 +45,7 @@ export const EditForm = ({ taskId, tasks, setTasks }) => {
         return {
           ...task,
           task_name: taskName,
-          task_deadline: taskDeadline,
+          task_end: taskDeadline,
           task_priority: taskPriority,
         };
       }
@@ -62,7 +74,7 @@ export const EditForm = ({ taskId, tasks, setTasks }) => {
             <div className="dateTimeSize">
               <DateTimePicker
                 // placeholder="MM/DD/YYYY hh:mm AM"
-                value={taskDeadline}
+                value={dayjs(taskDeadline)}
                 onChange={(newValue) =>
                   // console.log(newValue.format("YYYY-MM-DD HH:mm:ss"))
                   setTaskDeadline(newValue)

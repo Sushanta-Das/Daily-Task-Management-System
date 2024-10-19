@@ -5,7 +5,19 @@ import { Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AddTask } from "./AddTask";
 import { EditForm } from "./editForm";
-export const DeleteTask = ({ openDelete, setOpenDelete }) => {
+export const DeleteTask = ({
+  openDelete,
+  setOpenDelete,
+  taskId,
+  tasks,
+  setTasks,
+}) => {
+  const handleDeleteTask = () => {
+    const updatedTasks = tasks.filter((task) => task.task_id !== taskId);
+    setTasks(updatedTasks);
+    setOpenDelete(false);
+  };
+
   //   console.log("taskID", taskId);
   const style = {
     position: "absolute",
@@ -52,7 +64,7 @@ export const DeleteTask = ({ openDelete, setOpenDelete }) => {
             </Typography>
           </Box>
 
-          <Button color="error" variant="contained">
+          <Button color="error" variant="contained" onClick={handleDeleteTask}>
             Delete
           </Button>
         </Box>

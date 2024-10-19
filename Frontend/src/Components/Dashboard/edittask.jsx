@@ -11,6 +11,7 @@ export const EditTask = ({
   setTasks,
   openEdit,
   setOpenEdit,
+  user,
 }) => {
   console.log("taskID", taskId);
   const style = {

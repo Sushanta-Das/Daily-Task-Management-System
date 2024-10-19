@@ -10,10 +10,23 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import { TimePicker } from "@mui/lab";
-export const AddTask = ({ tasks, setTasks }) => {
+export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   // const [value, setValue] =
   //   (React.useState < Dayjs) | (null > dayjs("2022-04-17T15:30"));
   // const [selectedValue, setSelectedValue] = useState("");
+
+  const validateForm = () => {
+    if (task_name === "") {
+      alert("Please enter a task name");
+      return false;
+    } else if (task_deadline === "") {
+      alert("Please enter a deadline");
+      return false;
+    } else if (task_priority === "") {
+      alert("Please enter a priority");
+      return false;
+    } else return true;
+  };
   const [task_name, setTaskName] = useState("");
   const [task_description, setTaskDescription] = useState("");
   const [task_deadline, setTaskDeadline] = useState("");
@@ -27,22 +40,47 @@ export const AddTask = ({ tasks, setTasks }) => {
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  const createTask = () => {
-    setTasks([
-      ...tasks,
-      {
-        task_id: taskId,
-        task_name: task_name,
+  const createTask = async () => {
+    if (!validateForm()) return;
 
-        task_deadline: task_deadline,
-        task_priority: task_priority,
-        task_status: "pending",
-        // task_id: ,
-        task_created_at: task_created_at,
-      },
-    ]);
     // changeTaskId();
+    const taskData = {
+      task_name: task_name,
+      task_priority: task_priority,
+      task_creator: user.user_id,
+      task_comment: "",
+      task_parent: null,
+      task_end: task_deadline.format("YYYY-MM-DD HH:mm:ss"), // Format date to match your requirements
+      user_password: user.user_password, // Assuming user password is available in props
+    };
+
+    console.log(taskData);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/task`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(taskData), // Convert the task object to JSON string
+      });
+
+      // Check if the request was successful
+      if (response.status === 201) {
+        const newTask = await response.json(); // Get the response data
+        // Update the state with the new task added
+        let taskarray = newTask.return[0];
+        console.log(taskarray);
+        setTasks([...tasks, taskarray]);
+        setOpen(false); // Close the form/modal after adding
+      } else {
+        alert("Failed to create task. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating task:", error);
+      alert("An error occurred while creating the task.");
+    }
   };
+
   return (
     <div className="form-container">
       <TextField
@@ -59,7 +97,6 @@ export const AddTask = ({ tasks, setTasks }) => {
           <DemoItem label="Deadline">
             <div className="dateTimeSize">
               <DateTimePicker
-                placeholder="MM/DD/YYYY hh:mm AM"
                 onChange={(newValue) =>
                   // console.log(newValue.format("YYYY-MM-DD HH:mm:ss"))
                   setTaskDeadline(newValue)
