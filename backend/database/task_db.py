@@ -10,7 +10,8 @@ TASK_TABLE=""" tt.task_id, tt.task_name, tt.task_priority,
 
 def show_table(table_name):
     table_name=table_name.strip()
-    cursor = create_connection().cursor()
+    conn=create_connection()
+    cursor=conn.cursor()
     try:
         cursor.execute(f"SELECT * FROM {table_name}")
         rows = cursor.fetchall()
