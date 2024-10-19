@@ -124,3 +124,13 @@ DELETE  http://127.0.0.1:8080/team_update       #   To remove permission from ed
     "user_id":"tamal123",
     "user_password":"tamal123"
 }
+
+PUT http://127.0.0.1:8080/status_comment        # update by editor/creator
+
+{                                               # all fields are mandatory in case of update 
+    "task_id":6,
+    "user_id":"doremon",
+    "user_password":"1234567890",
+    "task_status":"Done",
+    "task_comment":"Helicopter"                 
+}

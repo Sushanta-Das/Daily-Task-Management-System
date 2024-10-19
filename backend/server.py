@@ -70,6 +70,12 @@ def editor_add_edit_delete_operation():
     auth_editor=request.json
     return editor_add_edit_delete(auth_editor,request.method)
 
+@app.route("/status_comment",methods=["PUT"])     # required user_id, user_password, task_id, task_status,task_comment
+def status_comment_edit_operation():
+    auth_editor=request.json
+    return status_comment_edit_creator_editor(auth_editor)
+
+
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
