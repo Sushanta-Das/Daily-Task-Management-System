@@ -6,6 +6,90 @@ from database.collaborate_db import*
 
 def db_error(e,code):return {"status": code,"message": str(e),"return":[]}
 
+def get_all_child_task_id(task_id):
+    try:
+        conn=create_connection()
+        cursor=conn.cursor()
+        cursor.execute(f"""WITH RECURSIVE ChildTasks AS (
+                            SELECT subtask_id FROM task_subtask_joiner
+                            WHERE task_id = %s 
+                            UNION ALL
+                            SELECT tt.subtask_id
+                            FROM task_subtask_joiner tt
+                            INNER JOIN ChildTasks ct ON tt.task_id = ct.subtask_id
+                            )
+                        SELECT * FROM ChildTasks;""",(task_id,))
+        rows=cursor.fetchall()
+        return rows,200
+    except Exception as e:return db_error(e),400
+    finally:cursor.close()
+def get_parent_of_user_task_joiner(task_id):
+    try:
+        conn=create_connection()
+        cursor=conn.cursor()
+        cursor.execute(f"""WITH RECURSIVE ParentTasks AS (
+                                SELECT task_id, subtask_id
+                                FROM task_subtask_joiner
+                                WHERE subtask_id = %s  
+
+                                UNION ALL
+
+                                SELECT tt.task_id, tt.subtask_id
+                                FROM task_subtask_joiner tt
+                                JOIN ParentTasks pt ON tt.subtask_id = pt.task_id
+                            )
+                            SELECT task_id
+                            FROM ParentTasks;""",(task_id,))
+        rows=cursor.fetchall()
+        return rows,200
+    except Exception as e:return [()],400
+    finally:cursor.close()
+
+
+def status_comment_edit_creator_editor(data):
+    try:        # data acess and user authentication
+        user_id,user_password= data["user_id"].strip(),data["user_password"].strip()
+        task_id,task_status,task_comment=data["task_id"],data["task_status"].strip(),data["task_comment"]
+        res,status_code=verify_user(user_id,user_password)
+        if status_code !=200:
+            return res,status_code
+    except Exception as e:
+        return db_error(e,400),400
+    
+    # after authentication and data input
+    parent_task_ids,status_code=get_parent_of_user_task_joiner(task_id)
+    conn=create_connection()
+    cursor=conn.cursor()        
+    try:
+        print(parent_task_ids)
+        ids=set()
+        for val in parent_task_ids:
+            if val:ids.add(val[0])
+        ids.add(task_id)
+        ids_placeholder = ', '.join(['%s'] * len(ids))
+        params=(user_id,) + tuple(ids)
+
+        cursor.execute(f"""SELECT user_id 
+                    FROM user_task_joiner 
+                    WHERE user_id=%s AND task_id IN ({ids_placeholder});""", params)
+        rows=cursor.fetchall()
+
+        if rows :   # either creator or editor
+            cursor.execute(f"""UPDATE task_table SET task_status=%s,task_comment=%s
+                                WHERE task_id=%s;""",(task_status,task_comment,task_id,))
+            conn.commit()
+            message,status_code="task status / comment updated successfully.",200
+        else:message,status_code=f"{user_id} is not eligible to update task status / comment.",401
+        return jsonify({
+            "status":status_code,
+            "message": message,
+            "return": [user_id,task_status,task_comment]
+            }),status_code
+    except Exception as e:
+        return db_error(e,400),400
+    finally:
+        cursor.close()
+
 def editor_add_edit_delete(data,method):   # add,edit,remove row from user_task_joiner
     try:        # data acess and user authentication
         user_id,user_password= data["user_id"].strip(),data["user_password"].strip()
@@ -15,23 +99,24 @@ def editor_add_edit_delete(data,method):   # add,edit,remove row from user_task_
             return res,status_code
     except Exception as e:
         return db_error(e,400),400
-    verified_msg="verification successful, "
+
     # after authentication
+    conn=create_connection()
+    cursor=conn.cursor()
     try:
-        conn=create_connection()
-        cursor=conn.cursor()
         cursor.execute(f"""SELECT task_creator 
                        FROM task_table WHERE task_id=%s;""",(task_id,))
         rows=cursor.fetchall()
-        print(rows)
+        # print(rows)
+
         task_creator=rows[0][0]
-        print(user_id==task_creator)
+        # print(user_id==task_creator)
 
         if user_id==task_creator:       # attempt made by creator
             cursor.execute("""SELECT user_id,task_id from user_task_joiner 
                            WHERE user_id=%s AND task_id=%s ;""",(task_editor,task_id,)) # 
             rows=cursor.fetchall()
-            print(rows)
+            # print(rows)
             if rows:    # verified , creator and old data hence delete data  in DELETE
                 if method=="POST":message,status_code="already shared hence ignored.",200
                 else:
@@ -47,7 +132,7 @@ def editor_add_edit_delete(data,method):   # add,edit,remove row from user_task_
                     message,status_code=f"sharing with '{task_editor}', new row added in user_task_joiner.",201
                 else:
                     message,status_code=f"enter a valid permission first for '{task_editor}' to remove it from user_task_joiner.",400
-            print(message)
+            # print(message)
             return jsonify({
             "status":status_code,
             "message": message,
@@ -59,7 +144,8 @@ def editor_add_edit_delete(data,method):   # add,edit,remove row from user_task_
             "return": []
             }),401
     except Exception as e:
-        print(verified_msg)
+        # print(verified_msg)
         return db_error(e,400),400
     finally:
         cursor.close()
+
