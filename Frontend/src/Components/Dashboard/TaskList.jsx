@@ -1,16 +1,24 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
+import {
+  Typography,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Checkbox,
+  IconButton,
+  Divider,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+} from "@mui/material";
+
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommentIcon from "@mui/icons-material/Comment";
-import Divider from "@mui/material/Divider";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { EditTask } from "./edittask";
 import { DeleteTask } from "./deleteTask";
 export default function TaskList({ tasks, setTasks, user }) {
@@ -67,13 +75,65 @@ export default function TaskList({ tasks, setTasks, user }) {
                     aria-label="comments"
                     onClick={(e) => handleClick(e, task.task_id)}
                   >
-                    <CommentIcon />
+                    <MoreVertIcon />
                   </IconButton>
                 }
                 disablePadding
               >
-                <ListItemText id={labelId} primary={` ${task.task_name}`} />
-                {task.task_end}
+                <ListItemText
+                  variant="h4"
+                  id={labelId}
+                  primary={
+                    <Typography
+                      component="span"
+                      variant="h6"
+                      sx={{ color: "text.primary", display: "inline" }}
+                    >
+                      {task.task_name}
+                    </Typography>
+                  }
+                  secondary={
+                    <>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ color: "text.primary", display: "inline" }}
+                      >
+                        due {task.task_end}
+                      </Typography>
+
+                      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        {/* <InputLabel id="demo-select-small-label">
+                          Status
+                        </InputLabel> */}
+                        <Select
+                          labelId="demo-select-small-label"
+                          id="demo-select-small"
+                          // value={}
+
+                          // onChange={handleChange}
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          <MenuItem value={10}>
+                            {" "}
+                            <Typography
+                              // component="span"
+                              variant="body1"
+                              color="success"
+                              sx={{ display: "inline" }}
+                            >
+                              Pending
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem value={20}>Active</MenuItem>
+                          <MenuItem value={30}>Completd</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </>
+                  }
+                />
               </ListItem>
               <Divider />
               <Menu
