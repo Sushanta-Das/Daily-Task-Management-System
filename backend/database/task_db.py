@@ -1,6 +1,7 @@
 from database.connect_db import *
 from database.user_db import verify_user
 from flask import jsonify
+from datetime import datetime
 TASK_TABLE=""" tt.task_id, tt.task_name, tt.task_priority,
             tt.task_iscollaborative, tt.task_start, tt.task_end,
             tt.task_creator, tt.task_executor, tt.task_status,
@@ -29,7 +30,20 @@ def get_user_tasks(user_id):
                 WHERE utj.user_id=%s ORDER BY tt.task_start;"""
         cursor.execute(query,(user_id,))
         rows=cursor.fetchall()
-        if rows:return jsonify(rows),200
+        # print(rows)
+        if rows:
+            column_names = [desc[0] for desc in cursor.description]
+
+            result = []
+            for row in rows:
+                row_dict = dict(zip(column_names, row))
+                
+                # Format task_end if it's a datetime object
+                if isinstance(row_dict.get('task_end'), datetime):
+                    row_dict['task_end'] = row_dict['task_end'].strftime('%Y-%m-%d %H:%M:%S')
+
+                result.append(row_dict)
+            return jsonify(result),200
         else:return jsonify(rows),204
     except Error as e:
         return jsonify(db_error(e,400)),400
@@ -67,6 +81,7 @@ def task_subtask_table_entry(data):
         task_id=cursor.lastrowid
         cursor.execute(f"SELECT {TASK_TABLE} from task_table as tt WHERE tt.task_id=%s",(task_id,))
         rows=cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
         message="task added successfully."
         if parent: # incase of new task is a subtask    parent != null,0
             cursor.execute("INSERT INTO task_subtask_joiner (task_id,subtask_id) VALUES (%s,%s);",
@@ -78,11 +93,20 @@ def task_subtask_table_entry(data):
                         (creator,task_id,))
             conn.commit()
             message="inserted new task in user_task_joiner and "+message
+      
 
+        result = []
+        for row in rows:
+                row_dict = dict(zip(column_names, row))
+                
+                # Format task_end if it's a datetime object
+                if isinstance(row_dict.get('task_end'), datetime):
+                    row_dict['task_end'] = row_dict['task_end'].strftime('%Y-%m-%d %H:%M:%S')
+                    result.append(row_dict)     
         return jsonify({
         "status":201,
         "message": message,
-        "return": rows
+        "return": result
         }),201
     except Error as e:
         return jsonify(db_error(e,400)),400

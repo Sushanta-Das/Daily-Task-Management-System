@@ -2,12 +2,14 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { Dashboard } from "./Components/Dashboard";
+// import TabsDash from "./Components/Dashboard/TabsDash.jsx";
+import Dashboard from "./Components/Dashboard/Dashboard.jsx";
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
+      {/* <Dashboard /> */}
       <Dashboard />
     </>
   );
