@@ -2,6 +2,8 @@ from flask import Flask,jsonify,request
 from flask_cors import CORS
 from database.user_db import *
 from database.task_db import *
+from database.collaborate_db import*
+
 app = Flask(__name__)
 
 CORS(app)
@@ -61,6 +63,13 @@ def create_edit_task():
 def get_subtask(): 
     task_id = request.args.get('task_id', type=str)
     return get_task_subtasks(task_id)
+
+## Add give permission to collaborator
+@app.route("/team_update",methods=["POST","DELETE"])     # required user_id, user_password, task_id, task_editor
+def editor_add_edit_delete_operation():
+    auth_editor=request.json
+    return editor_add_edit_delete(auth_editor,request.method)
+
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

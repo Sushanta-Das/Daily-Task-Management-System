@@ -110,3 +110,17 @@ DELETE  http://127.0.0.1:8080/task              # deleting task sub task
 /subtask
 GET     http://127.0.0.1:8080/subtask?task_id=3
 
+
+
+
+### sharing task/schedule with other users
+
+POST http://127.0.0.1:8080/team_update          #   To give permission to editor by user==creator
+
+DELETE  http://127.0.0.1:8080/team_update       #   To remove permission from editor by user==creator
+{
+    "task_id":1,
+    "task_editor":"doremon",
+    "user_id":"tamal123",
+    "user_password":"tamal123"
+}
