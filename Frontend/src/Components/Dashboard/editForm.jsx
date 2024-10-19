@@ -19,10 +19,9 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
   useEffect(() => {
     const task = tasks.find((task) => task.task_id === taskId);
     setTaskName(task.task_name);
-    setTaskDeadline(task.task_end);
+    setTaskDeadline(dayjs(task.task_end));
     setTaskPriority(task.task_priority);
     setTaskStatus(task.task_status);
-    setTaskCreatedAt(task.task_created_at);
   }, []);
   const validateForm = () => {
     if (taskName === "") {
@@ -36,25 +35,61 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
       return false;
     } else return true;
   };
-  const updateTask = () => {
+  const updateTask = async () => {
     if (!validateForm()) return;
     // Use map to create a new array with the updated object
-    const updatedTasks = tasks.map((task) => {
-      if (task.task_id === taskId) {
-        // Create a new object with the updated name
-        return {
-          ...task,
-          task_name: taskName,
-          task_end: taskDeadline,
-          task_priority: taskPriority,
-        };
-      }
-      // Return the object as is if no update is needed
-      return task;
-    });
+    const taskData = {
+      task_id: taskId,
+      task_name: taskName,
+      task_priority: taskPriority,
 
-    // Update the state with the new array
-    setTasks(updatedTasks);
+      task_comment: "",
+      task_parent: null,
+      task_end: taskDeadline.format("YYYY-MM-DD HH:mm:ss"), // Format date to match your requirements
+      user_password: user.user_password, // Assuming user password is available in props
+    };
+
+    console.log(taskData);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/task`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(taskData), // Convert the task object to JSON string
+      });
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // const newTask = await response.json(); // Get the response data
+        // // Update the state with the new task added
+        // let taskarray = newTask.return[0];
+        // console.log(taskarray);
+        // setTasks([...tasks, taskarray]);
+
+        const updatedTasks = tasks.map((task) => {
+          if (task.task_id === taskId) {
+            // Create a new object with the updated name
+            return {
+              ...task,
+              task_name: taskName,
+              task_end: taskDeadline.format("YYYY-MM-DD HH:mm:ss"),
+              task_priority: taskPriority,
+            };
+          }
+          // Return the object as is if no update is needed
+          return task;
+        });
+
+        // Update the state with the new array
+        setTasks(updatedTasks);
+      } else {
+        alert("Failed to edit task. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error editing task:", error);
+      alert("An error occurred while editing the task.");
+    }
   };
 
   return (
@@ -74,7 +109,7 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
             <div className="dateTimeSize">
               <DateTimePicker
                 // placeholder="MM/DD/YYYY hh:mm AM"
-                value={dayjs(taskDeadline)}
+                value={taskDeadline}
                 onChange={(newValue) =>
                   // console.log(newValue.format("YYYY-MM-DD HH:mm:ss"))
                   setTaskDeadline(newValue)

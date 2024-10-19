@@ -110,11 +110,13 @@ export default function TaskList({ tasks, setTasks, user }) {
         taskId={taskId}
         tasks={tasks}
         setTasks={setTasks}
+        user={user}
       />
       <DeleteTask
         openDelete={openDelete}
         setOpenDelete={setOpenDelete}
         taskId={taskId}
+        user={user}
         tasks={tasks}
         setTasks={setTasks}
       />
