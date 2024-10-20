@@ -105,86 +105,111 @@ export default function TaskList({ tasks, setTasks, user }) {
   };
 
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List sx={{ width: "100%", maxWidth: 450, bgcolor: "background.paper" }}>
       {tasks.length > 0 &&
         tasks.map((task) => {
           const labelId = `checkbox-list-label-${task.task_id}`;
 
           return (
             <div key={task.task_id}>
-              <ListItem
-                secondaryAction={
-                  <IconButton
-                    edge="end"
-                    aria-label="comments"
-                    onClick={(e) => handleClick(e, task.task_id)}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                disablePadding
-              >
-                <ListItemText
-                  variant="h4"
-                  id={labelId}
-                  primary={
-                    <Typography
-                      component="span"
-                      variant="h6"
-                      sx={{ color: "text.primary", display: "inline" }}
+              <div className="flex-row">
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color:
+                      task.task_priority === "High"
+                        ? "#dc3545" // Red for High
+                        : task.task_priority === "Medium"
+                          ? "#fd7e14" // Orange for Medium
+                          : "#28a745", // Green for Low
+                    fontWeight: "bold",
+                    marginRight: "10px", // Space between label and ListItem
+                  }}
+                >
+                  {task.task_priority} Priority
+                </Typography>
+
+                <ListItem
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label="comments"
+                      onClick={(e) => handleClick(e, task.task_id)}
                     >
-                      {task.task_name}
-                    </Typography>
+                      <MoreVertIcon />
+                    </IconButton>
                   }
-                  secondary={
-                    <>
+                  disablePadding
+                >
+                  <ListItemText
+                    variant="h4"
+                    id={labelId}
+                    primary={
                       <Typography
                         component="span"
-                        variant="body2"
+                        variant="h6"
                         sx={{ color: "text.primary", display: "inline" }}
                       >
-                        due {task.task_end}
+                        {task.task_name}
                       </Typography>
+                    }
+                    secondary={
+                      <>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ color: "text.secondary", display: "inline" }}
+                        >
+                          due {task.task_end}
+                        </Typography>
 
-                      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                        {/* <InputLabel id="demo-select-small-label">
+                        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                          {/* <InputLabel id="demo-select-small-label">
                           Status
                         </InputLabel> */}
-                        <Select
-                          labelId="demo-select-small-label"
-                          id="demo-select-small"
-                          value={task.task_status}
-                          onChange={(event) => {
-                            hangleStatusChange(
-                              task.task_id,
-                              event.target.value
-                            );
-                          }}
-                        >
-                          <MenuItem value="">
-                            <em>None</em>
-                          </MenuItem>
-                          <MenuItem value={"Pending"} sx={{ color: "#737373" }}>
-                            <Typography sx={{ color: "#737373" }}>
-                              Pending
-                            </Typography>
-                          </MenuItem>
-                          <MenuItem sx={{ color: "#f0650e" }} value={"Active"}>
-                            <Typography sx={{ color: "#f0650e" }}>
-                              Active
-                            </Typography>
-                          </MenuItem>
-                          <MenuItem sx={{ color: "#17ad00" }} value={"Done"}>
-                            <Typography sx={{ color: "#17ad00" }}>
-                              Done
-                            </Typography>
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </>
-                  }
-                />
-              </ListItem>
+                          <Select
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            value={task.task_status}
+                            onChange={(event) => {
+                              hangleStatusChange(
+                                task.task_id,
+                                event.target.value
+                              );
+                            }}
+                          >
+                            <MenuItem value="">
+                              <em>None</em>
+                            </MenuItem>
+                            <MenuItem
+                              value={"Pending"}
+                              sx={{ color: "#737373" }}
+                            >
+                              <Typography sx={{ color: "#737373" }}>
+                                Pending
+                              </Typography>
+                            </MenuItem>
+                            <MenuItem
+                              sx={{ color: "#ff4000" }}
+                              value={"Active"}
+                            >
+                              <Typography sx={{ color: "#ff4000" }}>
+                                Active
+                              </Typography>
+                            </MenuItem>
+                            <MenuItem sx={{ color: "#28a745" }} value={"Done"}>
+                              <Typography sx={{ color: "#28a745" }}>
+                                Done
+                              </Typography>
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </>
+                    }
+                  />
+                </ListItem>
+              </div>
               <Divider />
               <Menu
                 id="demo-positioned-menu"
