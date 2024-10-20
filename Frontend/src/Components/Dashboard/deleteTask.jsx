@@ -5,6 +5,8 @@ import { Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AddTask } from "./AddTask";
 import { EditForm } from "./editForm";
+
+// Delete a task
 export const DeleteTask = ({
   openDelete,
   setOpenDelete,

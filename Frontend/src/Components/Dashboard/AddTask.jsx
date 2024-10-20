@@ -8,12 +8,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
-// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-// import { TimePicker } from "@mui/lab";
+
+
+// Add a new task
 export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
-  // const [value, setValue] =
-  //   (React.useState < Dayjs) | (null > dayjs("2022-04-17T15:30"));
-  // const [selectedValue, setSelectedValue] = useState("");
+
 
   const validateForm = () => {
     if (task_name === "") {

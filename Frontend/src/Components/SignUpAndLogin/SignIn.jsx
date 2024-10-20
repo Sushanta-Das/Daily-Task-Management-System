@@ -1,6 +1,6 @@
 import React from 'react';
 import './SignUp.css';
-
+// Modal for sign in
 const SignIn = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
 

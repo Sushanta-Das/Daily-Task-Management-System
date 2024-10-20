@@ -13,6 +13,8 @@ import Dashboard from "./Components/Dashboard/Dashboard.jsx";
 import LandingPage from "./Components/SignUpAndLogin/LandingPage.jsx";
 import DashboardDummy from "./Components/Dashboard/DashboardDummy.jsx";
 
+//Entry point of the application
+// Route to the landing page and dashboard
 function App() {
   return (
     <>

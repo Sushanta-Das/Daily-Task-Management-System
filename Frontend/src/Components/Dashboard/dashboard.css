@@ -44,3 +44,6 @@
   transform:  translate3d(31vw, 27vh, 0px) !important
 
 }
+.noGap{
+    gap: 0px;
+}

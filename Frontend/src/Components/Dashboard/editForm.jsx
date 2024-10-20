@@ -10,6 +10,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import { TimePicker } from "@mui/lab";
+
+//form to edit the task
 export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
   const [taskName, setTaskName] = useState("");
   const [taskDeadline, setTaskDeadline] = useState(null);
@@ -65,12 +67,6 @@ export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
 
       // Check if the request was successful
       if (response.status === 200) {
-        // const newTask = await response.json(); // Get the response data
-        // // Update the state with the new task added
-        // let taskarray = newTask.return[0];
-        // console.log(taskarray);
-        // setTasks([...tasks, taskarray]);
-
         const updatedTasks = tasks.map((task) => {
           if (task.task_id === taskId) {
             // Create a new object with the updated name

@@ -6,6 +6,7 @@ import Add from "@mui/icons-material/Add";
 import { Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import TaskList from "./TaskList";
+//Showing the Current Tasks
 export const CurrentTasks = ({ tasks, setTasks, user }) => {
   const [open, setOpen] = React.useState(false);
   const style = {

@@ -21,6 +21,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommentIcon from "@mui/icons-material/Comment";
 import { EditTask } from "./edittask";
 import { DeleteTask } from "./deleteTask";
+
+
+
+
+
+
+// Shows list of tasks
 export default function TaskList({ tasks, setTasks, user }) {
   const firstUpdate = useRef(true);
   const handleClick = (event, task_id) => {
@@ -105,14 +112,14 @@ export default function TaskList({ tasks, setTasks, user }) {
   };
 
   return (
-    <List sx={{ width: "100%", maxWidth: 450, bgcolor: "background.paper" }}>
+    <List sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}>
       {tasks.length > 0 &&
         tasks.map((task) => {
           const labelId = `checkbox-list-label-${task.task_id}`;
 
           return (
             <div key={task.task_id}>
-              <div className="flex-row">
+              <div className="flex-row noGap">
                 <Typography
                   component="span"
                   variant="body2"
