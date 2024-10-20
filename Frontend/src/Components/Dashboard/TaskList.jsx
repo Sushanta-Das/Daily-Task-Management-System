@@ -46,6 +46,7 @@ export default function TaskList({ tasks, setTasks, user }) {
   const [checked, setChecked] = useState([0]);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  // const [taskStatus, setTaskStatus] = useState();
   const [taskId, setTaskId] = useState(-1);
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -58,6 +59,49 @@ export default function TaskList({ tasks, setTasks, user }) {
     }
 
     setChecked(newChecked);
+  };
+  const hangleStatusChange = (task_id, status) => {
+    console.log(task_id, status);
+    const newTasks = tasks.map((task) => {
+      if (task.task_id === task_id) {
+        task.task_status = status;
+      }
+      return task;
+    });
+    setTasks(newTasks);
+    //     PUT http://127.0.0.1:8080/status_comment        # update by editor/creator
+
+    // {                                               # all fields are mandatory in case of update
+    //     "task_id":6,
+    //     "user_id":"doremon",
+    //     "user_password":"1234567890",
+    //     "task_status":"Done",
+    //     "task_comment":"Helicopter"
+    // }
+
+    const taskData = {
+      task_id: task_id,
+      user_id: user.user_id,
+      user_password: user.user_password,
+      task_status: status,
+      task_comment: "",
+    };
+    console.log(taskData);
+    fetch("http://localhost:8080/status_comment", {
+      // Replace with actual endpoint
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(taskData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      }); // Convert the task object to JSON string
   };
 
   return (
@@ -109,26 +153,32 @@ export default function TaskList({ tasks, setTasks, user }) {
                         <Select
                           labelId="demo-select-small-label"
                           id="demo-select-small"
-                          // value={}
-
-                          // onChange={handleChange}
+                          value={task.task_status}
+                          onChange={(event) => {
+                            hangleStatusChange(
+                              task.task_id,
+                              event.target.value
+                            );
+                          }}
                         >
                           <MenuItem value="">
                             <em>None</em>
                           </MenuItem>
-                          <MenuItem value={10}>
-                            {" "}
-                            <Typography
-                              // component="span"
-                              variant="body1"
-                              color="success"
-                              sx={{ display: "inline" }}
-                            >
+                          <MenuItem value={"Pending"} sx={{ color: "#737373" }}>
+                            <Typography sx={{ color: "#737373" }}>
                               Pending
                             </Typography>
                           </MenuItem>
-                          <MenuItem value={20}>Active</MenuItem>
-                          <MenuItem value={30}>Completd</MenuItem>
+                          <MenuItem sx={{ color: "#f0650e" }} value={"Active"}>
+                            <Typography sx={{ color: "#f0650e" }}>
+                              Active
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem sx={{ color: "#17ad00" }} value={"Done"}>
+                            <Typography sx={{ color: "#17ad00" }}>
+                              Done
+                            </Typography>
+                          </MenuItem>
                         </Select>
                       </FormControl>
                     </>
@@ -158,7 +208,7 @@ export default function TaskList({ tasks, setTasks, user }) {
                 >
                   Edit Task
                 </MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleClose}>Add subtask</MenuItem>
                 <MenuItem onClick={handleDelete}>Delete</MenuItem>
               </Menu>
             </div>

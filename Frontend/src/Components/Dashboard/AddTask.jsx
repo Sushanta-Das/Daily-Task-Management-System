@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Typography } from "@mui/material";
 import { useState, useId } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -31,7 +31,7 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   const [task_description, setTaskDescription] = useState("");
   const [task_deadline, setTaskDeadline] = useState("");
   const [task_priority, setTaskPriority] = useState("");
-  const [task_status, setTaskStatus] = useState(useId());
+  // const [task_status, setTaskStatus] = useState(useId());
   const [taskId, setTaskId] = useState(tasks.length);
   const [task_created_at, setTaskCreatedAt] = useState("");
   const [is_collaborative, setIsCollaborative] = useState(false);
@@ -86,36 +86,36 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
         //     "user_password":"tamal123"
         // }
 
-        // if (is_collaborative) {
-        //   colaborators.map(async (colaborator) => {
-        //     const teamData = {
-        //       task_id: taskarray.task_id,
-        //       task_editor: colaborator,
-        //       user_id: user.user_id,
-        //       user_password: user.user_password,
-        //     };
-        //     try {
-        //       const response = await fetch(
-        //         `${import.meta.env.VITE_API_URL}/team_update`,
-        //         {
-        //           method: "POST",
-        //           headers: {
-        //             "Content-Type": "application/json",
-        //           },
-        //           body: JSON.stringify(teamData), // Convert the task object to JSON string
-        //         }
-        //       );
-        //       if (response.status === 201) {
-        //         console.log("collaborator added");
-        //       } else {
-        //         alert("Failed to add colaborator. Please try again.");
-        //       }
-        //     } catch (error) {
-        //       console.error("Error adding colaborator:", error);
-        //       alert("An error occurred while adding the colaborator.");
-        //     }
-        //   });
-        // }
+        if (is_collaborative) {
+          colaborators.map(async (colaborator) => {
+            const teamData = {
+              task_id: taskarray.task_id,
+              task_editor: colaborator,
+              user_id: user.user_id,
+              user_password: user.user_password,
+            };
+            try {
+              const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/team_update`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(teamData), // Convert the task object to JSON string
+                }
+              );
+              if (response.status === 201) {
+                console.log("collaborator added");
+              } else {
+                alert("Failed to add colaborator. Please try again.");
+              }
+            } catch (error) {
+              console.error("Error adding colaborator:", error);
+              alert("An error occurred while adding the colaborator.");
+            }
+          });
+        }
 
         setOpen(false); // Close the form/modal after adding
       } else {
@@ -165,9 +165,15 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
         >
           {/* Default placeholder item */}
 
-          <MenuItem value={"High"}>High</MenuItem>
-          <MenuItem value={"Medium"}>Medium</MenuItem>
-          <MenuItem value={"Low"}>Low</MenuItem>
+          <MenuItem value={"High"} sx={{ color: "red" }}>
+            <Typography sx={{ color: "red" }}>High</Typography>
+          </MenuItem>
+          <MenuItem value={"Medium"} sx={{ color: "#ffc107" }}>
+            <Typography sx={{ color: "#ffc107" }}>Medium</Typography>
+          </MenuItem>
+          <MenuItem value={"Low"} sx={{ color: "#28a745" }}>
+            <Typography sx={{ color: "#28a745" }}>Low</Typography>
+          </MenuItem>
         </Select>
         <div>
           <div className="flex-row">
@@ -175,6 +181,7 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
+              value={is_collaborative}
               onChange={(e) => setIsCollaborative(e.target.value)}
               displayEmpty
             >

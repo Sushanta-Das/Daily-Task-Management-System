@@ -14,8 +14,6 @@ import LandingPage from "./Components/SignUpAndLogin/LandingPage.jsx";
 import DashboardDummy from "./Components/Dashboard/DashboardDummy.jsx";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <Router>

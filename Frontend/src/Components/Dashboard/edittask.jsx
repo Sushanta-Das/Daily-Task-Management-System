@@ -50,7 +50,13 @@ export const EditTask = ({
             Edit Task
           </Typography>
 
-          <EditForm user={user} taskId={taskId} tasks={tasks} setTasks={setTasks} />
+          <EditForm
+            user={user}
+            taskId={taskId}
+            tasks={tasks}
+            setTasks={setTasks}
+            setOpenEdit={setOpenEdit}
+          />
         </Box>
       </Modal>
     </div>

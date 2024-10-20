@@ -10,18 +10,22 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import { TimePicker } from "@mui/lab";
-export const EditForm = ({ taskId, tasks, setTasks, user }) => {
+export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
   const [taskName, setTaskName] = useState("");
   const [taskDeadline, setTaskDeadline] = useState(null);
   const [taskPriority, setTaskPriority] = useState("");
   const [taskStatus, setTaskStatus] = useState("");
   const [taskCreatedAt, setTaskCreatedAt] = useState("");
+  const [is_collaborative, setIsCollaborative] = useState(false);
+  const [colaborators, setColaborators] = useState([]);
+  const [colaboratorId, setColaboratorId] = useState("");
   useEffect(() => {
     const task = tasks.find((task) => task.task_id === taskId);
     setTaskName(task.task_name);
     setTaskDeadline(dayjs(task.task_end));
     setTaskPriority(task.task_priority);
     setTaskStatus(task.task_status);
+    setIsCollaborative(task.task_iscollaborative);
   }, []);
   const validateForm = () => {
     if (taskName === "") {
@@ -42,7 +46,7 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
       task_id: taskId,
       task_name: taskName,
       task_priority: taskPriority,
-
+      task_iscollaborative: is_collaborative,
       task_comment: "",
       task_parent: null,
       task_end: taskDeadline.format("YYYY-MM-DD HH:mm:ss"), // Format date to match your requirements
@@ -80,9 +84,39 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
           // Return the object as is if no update is needed
           return task;
         });
-
+        if (is_collaborative) {
+          colaborators.map(async (colaborator, ind) => {
+            const teamData = {
+              task_id: taskId,
+              task_editor: colaborator,
+              user_id: user.user_id,
+              user_password: user.user_password,
+            };
+            try {
+              const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/team_update`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(teamData), // Convert the task object to JSON string
+                }
+              );
+              if (response.status === 201) {
+                console.log("collaborator added");
+              } else {
+                alert("Failed to add colaborator. Please try again.");
+              }
+            } catch (error) {
+              console.error("Error adding colaborator:", error);
+              alert("An error occurred while adding the colaborator.");
+            }
+          });
+        }
         // Update the state with the new array
         setTasks(updatedTasks);
+        setOpenEdit(false);
       } else {
         alert("Failed to edit task. Please try again.");
       }
@@ -138,7 +172,54 @@ export const EditForm = ({ taskId, tasks, setTasks, user }) => {
           <MenuItem value={"Medium"}>Medium</MenuItem>
           <MenuItem value={"Low"}>Low</MenuItem>
         </Select>
+        <div>
+          <div className="flex-row">
+            <InputLabel id="demo-simple-select-label">Collaborative</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={is_collaborative}
+              onChange={(e) => setIsCollaborative(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="">
+                <em>Select</em>
+              </MenuItem>
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </Select>
+          </div>
+        </div>
       </div>
+      {/* add colaborators  one by one textfield and add button by userid if it is colaborative show show userids on adding  */}
+      <div>
+        {is_collaborative ? (
+          <>
+            <TextField
+              id="standard-basic"
+              label="Enter Colaborator's User ID"
+              variant="standard"
+              sx={{ minWidth: "20vw", fontSize: "10px" }}
+              value={colaboratorId}
+              onChange={(e) => setColaboratorId(e.target.value)}
+            />
+
+            <Button
+              variant="outlined"
+              sx={{ marginTop: "1rem" }}
+              onClick={() => {
+                setColaborators([...colaborators, colaboratorId]);
+                setColaboratorId("");
+              }}
+            >
+              Add member
+            </Button>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+
       <Button
         size="md"
         variant="contained"

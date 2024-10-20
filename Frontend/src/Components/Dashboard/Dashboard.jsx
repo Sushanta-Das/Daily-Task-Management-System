@@ -86,7 +86,7 @@ export default function Dashboard() {
         >
           <Tab label="Current Tasks" {...a11yProps(0)} />
           <Tab label="Previous Tasks" {...a11yProps(1)} />
-          <Tab label="Other" {...a11yProps(2)} />
+          <Tab label="Kanban" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -96,7 +96,7 @@ export default function Dashboard() {
         <PreviousTasks tasks={tasks} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        Item Three
+        kanban board
       </CustomTabPanel>
     </Box>
   );
