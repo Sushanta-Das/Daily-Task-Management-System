@@ -56,9 +56,10 @@ def create_edit_task():
 # MAX EDITABLE task_name, task_priority,task_creator, task_iscollaborative,task_end, task_executor, 
 # task_status, task_comment ,task_parent
 
-    elif request.method=="DELETE":
-        return delete_task_subtask(task_data)       # "task_id","user_id","user_password"
-        
+    elif request.method=="DELETE":  # "task_id","user_id","user_password"
+        # return delete_task_subtask(task_data)       
+        return nested_delete_task_by_parent_creator(task_data)
+    
 @app.route("/subtask",methods=["GET"])
 def get_subtask(): 
     task_id = request.args.get('task_id', type=str)
@@ -73,9 +74,14 @@ def editor_add_edit_delete_operation():
 @app.route("/status_comment",methods=["PUT"])     # required user_id, user_password, task_id, task_status,task_comment
 def status_comment_edit_operation():
     auth_editor=request.json
-    return status_comment_edit_creator_editor(auth_editor)
+    return status_comment_edit_creator_editor_dynamic(auth_editor)
+
+@app.route("/nested_delete_task",methods=["DELETE"])     # required user_id, user_password, task_id
+def nested_delete_task():
+    auth_editor=request.json
+    return nested_delete_task_by_parent_creator(auth_editor)
 
 
-    
+     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
