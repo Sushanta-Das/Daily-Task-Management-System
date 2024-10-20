@@ -34,6 +34,9 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   const [task_status, setTaskStatus] = useState(useId());
   const [taskId, setTaskId] = useState(tasks.length);
   const [task_created_at, setTaskCreatedAt] = useState("");
+  const [is_collaborative, setIsCollaborative] = useState(false);
+  const [colaborators, setColaborators] = useState([]);
+  const [colaboratorId, setColaboratorId] = useState("");
   const changeTaskId = () => {
     setTaskId(taskId + 1);
   };
@@ -52,6 +55,7 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
       task_parent: null,
       task_end: task_deadline.format("YYYY-MM-DD HH:mm:ss"), // Format date to match your requirements
       user_password: user.user_password, // Assuming user password is available in props
+      task_iscollaborative: is_collaborative,
     };
 
     console.log(taskData);
@@ -71,6 +75,48 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
         let taskarray = newTask.return[0];
         console.log(taskarray);
         setTasks([...tasks, taskarray]);
+
+        // POST http://127.0.0.1:8080/team_update          #   To give permission to editor by user==creator
+
+        // DELETE  http://127.0.0.1:8080/team_update       #   To remove permission from editor by user==creator
+        // {
+        //     "task_id":1,
+        //     "task_editor":"doremon",
+        //     "user_id":"tamal123",
+        //     "user_password":"tamal123"
+        // }
+
+        // if (is_collaborative) {
+        //   colaborators.map(async (colaborator) => {
+        //     const teamData = {
+        //       task_id: taskarray.task_id,
+        //       task_editor: colaborator,
+        //       user_id: user.user_id,
+        //       user_password: user.user_password,
+        //     };
+        //     try {
+        //       const response = await fetch(
+        //         `${import.meta.env.VITE_API_URL}/team_update`,
+        //         {
+        //           method: "POST",
+        //           headers: {
+        //             "Content-Type": "application/json",
+        //           },
+        //           body: JSON.stringify(teamData), // Convert the task object to JSON string
+        //         }
+        //       );
+        //       if (response.status === 201) {
+        //         console.log("collaborator added");
+        //       } else {
+        //         alert("Failed to add colaborator. Please try again.");
+        //       }
+        //     } catch (error) {
+        //       console.error("Error adding colaborator:", error);
+        //       alert("An error occurred while adding the colaborator.");
+        //     }
+        //   });
+        // }
+
         setOpen(false); // Close the form/modal after adding
       } else {
         alert("Failed to create task. Please try again.");
@@ -118,16 +164,61 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
           displayEmpty
         >
           {/* Default placeholder item */}
-          <MenuItem value="">
-            <em>Select</em>
-          </MenuItem>
+
           <MenuItem value={"High"}>High</MenuItem>
           <MenuItem value={"Medium"}>Medium</MenuItem>
           <MenuItem value={"Low"}>Low</MenuItem>
         </Select>
+        <div>
+          <div className="flex-row">
+            <InputLabel id="demo-simple-select-label">Collaborative</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              onChange={(e) => setIsCollaborative(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="">
+                <em>Select</em>
+              </MenuItem>
+              <MenuItem value={true}>Yes</MenuItem>
+              <MenuItem value={false}>No</MenuItem>
+            </Select>
+          </div>
+        </div>
       </div>
+      {/* add colaborators  one by one textfield and add button by userid if it is colaborative show show userids on adding  */}
+      <div>
+        {is_collaborative ? (
+          <>
+            <TextField
+              id="standard-basic"
+              label="Enter Colaborator's User ID"
+              variant="standard"
+              sx={{ minWidth: "20vw", fontSize: "10px" }}
+              value={colaboratorId}
+              onChange={(e) => setColaboratorId(e.target.value)}
+            />
+
+            <Button
+              variant="outlined"
+              sx={{ marginTop: "1rem" }}
+              onClick={() => {
+                setColaborators([...colaborators, colaboratorId]);
+                setColaboratorId("");
+              }}
+            >
+              Add member
+            </Button>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+
       <Button
         size="md"
+        sx={{ marginTop: "1rem" }}
         variant="contained"
         color="success"
         onClick={() => {
