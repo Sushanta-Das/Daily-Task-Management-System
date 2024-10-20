@@ -76,3 +76,83 @@ DROP TABLE user_task_joiner;
 INSERT INTO user_task_joiner (user_id, task_id) VALUES ('tamal123', 1);
 INSERT INTO user_task_joiner (user_id, task_id) VALUES ('sus123', 2);
 INSERT INTO user_task_joiner (user_id, task_id) VALUES ('sus123', 1);
+
+
+WITH RECURSIVE ChildTasks AS (
+    -- Base case: get direct subtasks for the specified task_id
+    SELECT subtask_id
+    FROM task_subtask_joiner
+    WHERE task_id = 1  -- Replace 1 with your desired parent task_id
+
+    UNION ALL
+
+    -- Recursive case: join to find further subtasks
+    SELECT tt.subtask_id
+    FROM task_subtask_joiner tt
+    INNER JOIN ChildTasks ct ON tt.task_id = ct.subtask_id
+)
+SELECT * FROM ChildTasks;
+
+WITH RECURSIVE ParentTasks AS (
+    SELECT task_id, subtask_id
+    FROM task_subtask_joiner
+    WHERE subtask_id = 26  -- Replace with your specific subtask_id
+
+    UNION ALL
+
+    SELECT tt.task_id, tt.subtask_id
+    FROM task_subtask_joiner tt
+    JOIN ParentTasks pt ON tt.subtask_id = pt.task_id
+)
+SELECT task_id
+FROM ParentTasks
+ORDER BY task_id
+LIMIT 1;  -- Get the root task_id
+
+WITH RECURSIVE ParentTasks AS (
+    SELECT task_id, subtask_id
+    FROM task_subtask_joiner
+    WHERE subtask_id = 28  -- Replace with your specific subtask_id
+
+    UNION ALL
+
+    SELECT tt.task_id, tt.subtask_id
+    FROM task_subtask_joiner tt
+    JOIN ParentTasks pt ON tt.subtask_id = pt.task_id
+)
+SELECT task_id
+FROM ParentTasks;
+ORDER BY task_id
+LIMIT 1;  -- Get the root task_id
+
+SELECT user_id 
+FROM user_task_joiner 
+WHERE task_id IN (1,3,26);
+
+WITH RECURSIVE ParentTasks AS (
+    SELECT task_id, subtask_id
+    FROM task_subtask_joiner
+    WHERE subtask_id = 3  
+
+    UNION ALL
+
+    SELECT tt.task_id, tt.subtask_id
+    FROM task_subtask_joiner tt
+    JOIN ParentTasks pt ON tt.subtask_id = pt.task_id
+)
+SELECT DISTINCT utj.user_id
+FROM user_task_joiner utj
+JOIN ParentTasks pt ON utj.task_id = pt.task_id
+OR pt.subtask_id = 3;  
+
+
+USE daily_task_management ;
+
+SELECT user_id 
+FROM user_task_joiner 
+WHERE user_id="sus123" AND task_id IN (1,3,26);  -- creator / editor has access
+
+SELECT * 
+FROM task_table 
+WHERE task_creator="doremon" AND task_id IN (1,3,26,28);  -- creator/creator of parent has access only
+
