@@ -23,7 +23,8 @@ def get_all_child_task_id(task_id):
         return rows,200
     except Exception as e:return db_error(e),400
     finally:cursor.close()
-def get_parent_of_user_task_joiner(task_id):
+
+def get_user_authority_on_task(user_id,task_id)->str:
     try:
         conn=create_connection()
         cursor=conn.cursor()
@@ -40,13 +41,26 @@ def get_parent_of_user_task_joiner(task_id):
                             )
                             SELECT task_id
                             FROM ParentTasks;""",(task_id,))
+        parent_task_ids=cursor.fetchall() # getting all parent task_id
+        access_task_ids=set()
+        for val in parent_task_ids:
+            if val:access_task_ids.add(val[0])
+        access_task_ids.add(task_id) # any task_id has access on itself
+        ids_placeholder = ', '.join(['%s'] * len(access_task_ids))
+        params=(user_id,) + tuple(access_task_ids)
+
+        cursor.execute(f"""SELECT user_id 
+                    FROM user_task_joiner 
+                    WHERE user_id=%s AND task_id IN ({ids_placeholder});""", params)
         rows=cursor.fetchall()
-        return rows,200
-    except Exception as e:return [()],400
+        if rows:result= "Editor"
+        else: result= None
+        print(result)
+        return result
+    except Exception as e:return None
     finally:cursor.close()
 
-
-def status_comment_edit_creator_editor(data):
+def status_comment_edit_creator_editor_dynamic(data):
     try:        # data acess and user authentication
         user_id,user_password= data["user_id"].strip(),data["user_password"].strip()
         task_id,task_status,task_comment=data["task_id"],data["task_status"].strip(),data["task_comment"]
@@ -57,29 +71,16 @@ def status_comment_edit_creator_editor(data):
         return db_error(e,400),400
     
     # after authentication and data input
-    parent_task_ids,status_code=get_parent_of_user_task_joiner(task_id)
+    authority=get_user_authority_on_task(user_id,task_id) # Creator,Editor,None
     conn=create_connection()
     cursor=conn.cursor()        
     try:
-        print(parent_task_ids)
-        ids=set()
-        for val in parent_task_ids:
-            if val:ids.add(val[0])
-        ids.add(task_id)
-        ids_placeholder = ', '.join(['%s'] * len(ids))
-        params=(user_id,) + tuple(ids)
-
-        cursor.execute(f"""SELECT user_id 
-                    FROM user_task_joiner 
-                    WHERE user_id=%s AND task_id IN ({ids_placeholder});""", params)
-        rows=cursor.fetchall()
-
-        if rows :   # either creator or editor
+        if authority in ["Creator","Editor"] :   # either creator or editor
             cursor.execute(f"""UPDATE task_table SET task_status=%s,task_comment=%s
                                 WHERE task_id=%s;""",(task_status,task_comment,task_id,))
             conn.commit()
             message,status_code="task status / comment updated successfully.",200
-        else:message,status_code=f"{user_id} is not eligible to update task status / comment.",401
+        else:message,status_code=f"user '{user_id}' is not eligible to update task status / comment.",401
         return jsonify({
             "status":status_code,
             "message": message,
