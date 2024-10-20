@@ -1,6 +1,6 @@
 import React from "react";
 import { AddTask } from "./AddTask";
-import { Tasks } from "./Tasks";
+
 import { Button, Box, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { Modal } from "@mui/material";
