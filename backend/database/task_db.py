@@ -110,6 +110,7 @@ def task_subtask_table_entry(data):
         "return": result
         }),201
     except Error as e:
+        conn.rollback()
         return jsonify(db_error(e,400)),400
     finally:
         cursor.close()
@@ -259,6 +260,7 @@ def delete_task_subtask(data): # need : task_id, user_id (of current user)
         "return": []
         }),401
     except Error as e:
+        conn.rollback()
         return jsonify(db_error(e,400)),400
     finally: 
         cursor.close()

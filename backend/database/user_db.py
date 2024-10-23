@@ -70,6 +70,7 @@ def create_new_user(data):
         }
         return jsonify(rows),201
     except Error as e:
+        conn.rollback()
         return db_error(e,400),400
     finally:
         cursor.close() 
@@ -119,6 +120,7 @@ def update_existing_user_details(data):
         }
         return jsonify(rows),200
     except Error as e:
+        conn.rollback()
         return db_error(e,400),400
     finally:
         cursor.close() 

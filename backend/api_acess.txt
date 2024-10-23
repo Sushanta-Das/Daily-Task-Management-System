@@ -143,3 +143,8 @@ DELETE http://127.0.0.1:8080/task               # Delete all task/subtask/shared
     "user_id":"root",
     "user_password":"123"
 }
+
+GET http://127.0.0.1:8080/suggestion            # to get suggestions
+
+### background task
+One background thread is running in each minute to update missed tasks bassed on end time
