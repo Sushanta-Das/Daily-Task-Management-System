@@ -67,7 +67,7 @@ def get_subtask():
     return get_task_subtasks(task_id)
 
 ## Add give permission to collaborator
-@app.route("/team_update",methods=["POST","DELETE"])     # required user_id, user_password, task_id, task_editor
+@app.route("/team_update",methods=["POST","DELETE","PUT"])     # required user_id, user_password, task_id, task_editor
 def editor_add_edit_delete_operation():
     auth_editor=request.json
     return editor_add_edit_delete(auth_editor,request.method)
