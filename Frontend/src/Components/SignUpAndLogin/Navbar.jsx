@@ -4,6 +4,13 @@ import { Button } from "@mui/material";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import "./Navbar.css";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  MenuItem,
+} from "@mui/material";
 
 const Navbar = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -33,8 +40,8 @@ const Navbar = () => {
             <Button variant="contained" color="success" onClick={openSignUp}>
               Sign Up
             </Button>
-
-            <SignUp isOpen={isSignUpOpen} onClose={closeSignUp}>
+            <SignUp isOpen={isSignUpOpen} onClose={closeSignUp} />
+            {/* <SignUp isOpen={isSignUpOpen} onClose={closeSignUp}>
               <h2>SignUp</h2>
               ID:{" "}
               <input
@@ -129,13 +136,13 @@ const Navbar = () => {
               >
                 Submit
               </Button>
-            </SignUp>
+            </SignUp> */}
 
             <Button variant="contained" onClick={openSignIn}>
               Sign In
             </Button>
-
-            <SignIn isOpen={isSignInOpen} onClose={closeSignIn}>
+            <SignIn isOpen={isSignInOpen} onClose={closeSignIn} />
+            {/* <SignIn isOpen={isSignInOpen} onClose={closeSignIn}>
               <h2>SignIn</h2>
               ID:{" "}
               <input
@@ -194,7 +201,7 @@ const Navbar = () => {
               >
                 Submit
               </Button>
-            </SignIn>
+            </SignIn> */}
           </ul>
         </div>
       </nav>

@@ -61,7 +61,10 @@ export default function Dashboard() {
             "Content-Type": "application/json",
           },
         });
-
+        if (response.status !== 200) {
+          console.error("Failed to fetch tasks:", response);
+          return;
+        }
         const data = await response.json();
         console.log(data);
         setTasks(data);

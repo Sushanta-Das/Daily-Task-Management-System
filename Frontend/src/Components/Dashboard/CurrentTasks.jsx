@@ -40,6 +40,7 @@ export const CurrentTasks = ({ tasks, setTasks, user }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            width: "auto",
           }}
         >
           {/* <AddTask tasks={tasks} setTasks={setTasks} /> */}

@@ -18,7 +18,7 @@ export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
   const [taskPriority, setTaskPriority] = useState("");
   const [taskStatus, setTaskStatus] = useState("");
   const [taskCreatedAt, setTaskCreatedAt] = useState("");
-  const [is_collaborative, setIsCollaborative] = useState(false);
+  const [is_collaborative, setIsCollaborative] = useState(0);
   const [colaborators, setColaborators] = useState([]);
   const [colaboratorId, setColaboratorId] = useState("");
   useEffect(() => {
@@ -181,15 +181,15 @@ export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
               <MenuItem value="">
                 <em>Select</em>
               </MenuItem>
-              <MenuItem value={true}>Yes</MenuItem>
-              <MenuItem value={false}>No</MenuItem>
+              <MenuItem value={1}>Yes</MenuItem>
+              <MenuItem value={0}>No</MenuItem>
             </Select>
           </div>
         </div>
       </div>
       {/* add colaborators  one by one textfield and add button by userid if it is colaborative show show userids on adding  */}
       <div>
-        {is_collaborative ? (
+        {is_collaborative == 1 ? (
           <>
             <TextField
               id="standard-basic"

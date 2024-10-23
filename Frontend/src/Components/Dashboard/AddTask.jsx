@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Button, Typography } from "@mui/material";
+import { TextField, Button, Typography, ListItemIcon } from "@mui/material";
 import { useState, useId } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -7,13 +7,11 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-
-
-
+import LowPriorityIcon from "@mui/icons-material/ArrowDownward";
+import MediumPriorityIcon from "@mui/icons-material/ArrowForward";
+import HighPriorityIcon from "@mui/icons-material/ArrowUpward";
 // Add a new task
 export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
-
-
   const validateForm = () => {
     if (task_name === "") {
       alert("Please enter a task name");
@@ -33,7 +31,7 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   // const [task_status, setTaskStatus] = useState(useId());
   const [taskId, setTaskId] = useState(tasks.length);
   const [task_created_at, setTaskCreatedAt] = useState("");
-  const [is_collaborative, setIsCollaborative] = useState(false);
+  const [is_collaborative, setIsCollaborative] = useState(0);
   const [colaborators, setColaborators] = useState([]);
   const [colaboratorId, setColaboratorId] = useState("");
   const changeTaskId = () => {
@@ -41,6 +39,17 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   };
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
+  };
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case "High":
+        return <HighPriorityIcon sx={{ color: "#dc3545" }} />; // Red for High
+      case "Medium":
+        return <MediumPriorityIcon sx={{ color: "#fd7e14" }} />; // Orange for Medium
+      case "Low":
+      default:
+        return <LowPriorityIcon sx={{ color: "#28a745" }} />; // Green for Low
+    }
   };
   const createTask = async () => {
     if (!validateForm()) return;
@@ -152,7 +161,7 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
         </DemoContainer>
       </LocalizationProvider>
 
-      <div className="flex-row">
+      <div className="flex-row gap8px">
         <InputLabel id="select-label">Priority</InputLabel>
         <Select
           labelId="select-label"
@@ -161,17 +170,29 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
           label="Select an option"
           onChange={(e) => setTaskPriority(e.target.value)}
           displayEmpty
+          sx={{ display: "flex" }}
         >
           {/* Default placeholder item */}
-
-          <MenuItem value={"High"} sx={{ color: "red" }}>
-            <Typography sx={{ color: "red" }}>High</Typography>
+          <MenuItem value="">
+            <em>Select</em>
           </MenuItem>
-          <MenuItem value={"Medium"} sx={{ color: "#ffc107" }}>
-            <Typography sx={{ color: "#ffc107" }}>Medium</Typography>
+          <MenuItem value={"High"} sx={{ color: "red" }}>
+            <div className="flex-row noGap">
+              {getPriorityIcon("High")}
+              <Typography sx={{ color: "red", margin: "0" }}>High</Typography>
+            </div>
+          </MenuItem>
+          <MenuItem value={"Medium"} sx={{ color: "#fd7e14" }}>
+            <div className="flex-row noGap">
+              {getPriorityIcon("Medium")}
+              <Typography sx={{ color: "#fd7e14" }}>Medium</Typography>
+            </div>
           </MenuItem>
           <MenuItem value={"Low"} sx={{ color: "#28a745" }}>
-            <Typography sx={{ color: "#28a745" }}>Low</Typography>
+            <div className="flex-row noGap">
+              {getPriorityIcon("Low")}
+              <Typography sx={{ color: "#28a745" }}>Low</Typography>
+            </div>
           </MenuItem>
         </Select>
         <div>
@@ -187,8 +208,8 @@ export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
               <MenuItem value="">
                 <em>Select</em>
               </MenuItem>
-              <MenuItem value={true}>Yes</MenuItem>
-              <MenuItem value={false}>No</MenuItem>
+              <MenuItem value={1}>Yes</MenuItem>
+              <MenuItem value={0}>No</MenuItem>
             </Select>
           </div>
         </div>

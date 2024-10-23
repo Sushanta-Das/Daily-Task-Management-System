@@ -4,28 +4,22 @@ import {
   Typography,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Checkbox,
   IconButton,
   Divider,
   Menu,
   MenuItem,
   FormControl,
-  InputLabel,
   Select,
+  ListItemIcon,
+  Grid,
 } from "@mui/material";
-
+import LowPriorityIcon from "@mui/icons-material/ArrowDownward";
+import MediumPriorityIcon from "@mui/icons-material/ArrowForward";
+import HighPriorityIcon from "@mui/icons-material/ArrowUpward";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommentIcon from "@mui/icons-material/Comment";
 import { EditTask } from "./edittask";
 import { DeleteTask } from "./deleteTask";
-
-
-
-
-
 
 // Shows list of tasks
 export default function TaskList({ tasks, setTasks, user }) {
@@ -47,7 +41,17 @@ export default function TaskList({ tasks, setTasks, user }) {
     setOpenDelete(true);
     handleClose();
   };
-
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case "High":
+        return <HighPriorityIcon sx={{ color: "#dc3545" }} />; // Red for High
+      case "Medium":
+        return <MediumPriorityIcon sx={{ color: "#fd7e14" }} />; // Orange for Medium
+      case "Low":
+      default:
+        return <LowPriorityIcon sx={{ color: "#28a745" }} />; // Green for Low
+    }
+  };
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [checked, setChecked] = useState([0]);
@@ -67,7 +71,7 @@ export default function TaskList({ tasks, setTasks, user }) {
 
     setChecked(newChecked);
   };
-  const hangleStatusChange = (task_id, status) => {
+  const handleStatusChange = (task_id, status) => {
     console.log(task_id, status);
     const newTasks = tasks.map((task) => {
       if (task.task_id === task_id) {
@@ -112,7 +116,14 @@ export default function TaskList({ tasks, setTasks, user }) {
   };
 
   return (
-    <List sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}>
+    <List
+      sx={{
+        width: "100%",
+        bgcolor: "background.paper",
+        maxWidth: "800px",
+        margin: "0 auto",
+      }}
+    >
       {tasks.length > 0 &&
         tasks.map((task) => {
           const labelId = `checkbox-list-label-${task.task_id}`;
@@ -120,107 +131,70 @@ export default function TaskList({ tasks, setTasks, user }) {
           return (
             <div key={task.task_id}>
               <div className="flex-row noGap">
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color:
-                      task.task_priority === "High"
-                        ? "#dc3545" // Red for High
-                        : task.task_priority === "Medium"
-                          ? "#fd7e14" // Orange for Medium
-                          : "#28a745", // Green for Low
-                    fontWeight: "bold",
-                    marginRight: "10px", // Space between label and ListItem
-                  }}
-                >
-                  {task.task_priority} Priority
-                </Typography>
-
-                <ListItem
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="comments"
-                      onClick={(e) => handleClick(e, task.task_id)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                  disablePadding
-                >
-                  <ListItemText
-                    variant="h4"
-                    id={labelId}
-                    primary={
+                <ListItem alignItems="flex-start" disablePadding>
+                  <ListItemIcon>
+                    {getPriorityIcon(task.task_priority)}
+                  </ListItemIcon>
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={8}>
                       <Typography
-                        component="span"
                         variant="h6"
-                        sx={{ color: "text.primary", display: "inline" }}
+                        sx={{
+                          wordWrap: "break-word",
+                          whiteSpace: "normal", // allow text to wrap
+                          maxWidth: "100%",
+                        }}
                       >
                         {task.task_name}
                       </Typography>
-                    }
-                    secondary={
-                      <>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{ color: "text.secondary", display: "inline" }}
-                        >
-                          due {task.task_end}
-                        </Typography>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        due {task.task_end}
+                      </Typography>
+                    </Grid>
 
-                        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                          {/* <InputLabel id="demo-select-small-label">
-                          Status
-                        </InputLabel> */}
-                          <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            value={task.task_status}
-                            onChange={(event) => {
-                              hangleStatusChange(
-                                task.task_id,
-                                event.target.value
-                              );
-                            }}
-                          >
-                            <MenuItem value="">
-                              <em>None</em>
-                            </MenuItem>
-                            <MenuItem
-                              value={"Pending"}
-                              sx={{ color: "#737373" }}
-                            >
-                              <Typography sx={{ color: "#737373" }}>
-                                Pending
-                              </Typography>
-                            </MenuItem>
-                            <MenuItem
-                              sx={{ color: "#ff4000" }}
-                              value={"Active"}
-                            >
-                              <Typography sx={{ color: "#ff4000" }}>
-                                Active
-                              </Typography>
-                            </MenuItem>
-                            <MenuItem sx={{ color: "#28a745" }} value={"Done"}>
-                              <Typography sx={{ color: "#28a745" }}>
-                                Done
-                              </Typography>
-                            </MenuItem>
-                          </Select>
-                        </FormControl>
-                      </>
-                    }
-                  />
+                    <Grid item xs={4} container justifyContent="flex-end">
+                      <FormControl sx={{ m: 1 }} size="small">
+                        <Select
+                          value={task.task_status}
+                          onChange={(event) =>
+                            handleStatusChange(task.task_id, event.target.value)
+                          }
+                        >
+                          <MenuItem value={"Pending"} sx={{ color: "#737373" }}>
+                            <Typography sx={{ color: "#737373" }}>
+                              Pending
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem sx={{ color: "#ff4000" }} value={"Active"}>
+                            <Typography sx={{ color: "#ff4000" }}>
+                              Active
+                            </Typography>
+                          </MenuItem>
+                          <MenuItem sx={{ color: "#28a745" }} value={"Done"}>
+                            <Typography sx={{ color: "#28a745" }}>
+                              Done
+                            </Typography>
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <IconButton
+                        edge="end"
+                        aria-label="More"
+                        onClick={(e) => handleClick(e, task.task_id)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
                 </ListItem>
               </div>
               <Divider />
               <Menu
-                id="demo-positioned-menu"
-                aria-labelledby="demo-positioned-button"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -233,11 +207,7 @@ export default function TaskList({ tasks, setTasks, user }) {
                   horizontal: "left",
                 }}
               >
-                <MenuItem
-                  onClick={() => {
-                    handleEdit(task.task_id);
-                  }}
-                >
+                <MenuItem onClick={() => handleEdit(task.task_id)}>
                   Edit Task
                 </MenuItem>
                 <MenuItem onClick={handleClose}>Add subtask</MenuItem>
@@ -246,6 +216,7 @@ export default function TaskList({ tasks, setTasks, user }) {
             </div>
           );
         })}
+
       <EditTask
         openEdit={openEdit}
         setOpenEdit={setOpenEdit}
