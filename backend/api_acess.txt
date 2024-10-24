@@ -100,7 +100,7 @@ PUT     http://127.0.0.1:8080/task              # editing task/subtask of task_t
     "user_password":"tamal123"                  # mandatory
 }
 
-DELETE  http://127.0.0.1:8080/task              # deleting task sub task
+DELETE  http://127.0.0.1:8080/task              # delete all task/subtask/shared task by craetor of t/t+ level
 {
     "user_id" : "sus123",
     "user_password":"sus123",
@@ -134,3 +134,17 @@ PUT http://127.0.0.1:8080/status_comment        # update by editor/creator
     "task_status":"Done",
     "task_comment":"Helicopter"                 
 }
+
+
+DELETE http://127.0.0.1:8080/task               # Delete all task/subtask/shared task by craetor of t/t+ level
+
+{
+    "task_id":29,
+    "user_id":"root",
+    "user_password":"123"
+}
+
+GET http://127.0.0.1:8080/suggestion            # to get suggestions
+
+### background task
+One background thread is running in each minute to update missed tasks bassed on end time

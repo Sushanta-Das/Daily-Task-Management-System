@@ -1,15 +1,29 @@
 from flask import Flask,jsonify,request
 from flask_cors import CORS
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 from database.user_db import *
 from database.task_db import *
 from database.collaborate_db import*
+from database.background_db import *
+from components.suggestion import *
 
 app = Flask(__name__)
 
 CORS(app)
 
+# first handeling background tasks      
+scheduler = BackgroundScheduler() ## used for : tasks status update 
+scheduler.add_job(update_missed_task_status, 'interval', seconds=60)  # calling in each minute
+scheduler.start()
 
-## Base url setup
+def shutdown_scheduler():
+    print("\n\nbackground task stopped")
+    scheduler.shutdown()
+
+atexit.register(shutdown_scheduler) # stopping function on exit
+
+## base url setup
 
 @app.route('/')
 def home():
@@ -51,31 +65,39 @@ def create_edit_task():
     task_data=request.json
     if request.method=="POST":  # 'task_name','task_priority',"task_creator","task_comment","task_parent"
         return task_subtask_table_entry(task_data)  
+    
     elif request.method=="PUT": 
         return task_subtask_table_edit(task_data)   # required "task_id"
 # MAX EDITABLE task_name, task_priority,task_creator, task_iscollaborative,task_end, task_executor, 
 # task_status, task_comment ,task_parent
 
-    elif request.method=="DELETE":
-        return delete_task_subtask(task_data)       # "task_id","user_id","user_password"
-        
-@app.route("/subtask",methods=["GET"])
+    elif request.method=="DELETE":  # "task_id","user_id","user_password"
+        # return delete_task_subtask(task_data)       
+        return nested_delete_task_by_parent_creator(task_data)
+    
+@app.route("/subtask",methods=["GET"])              # http://127.0.0.1:8080/subtask
 def get_subtask(): 
     task_id = request.args.get('task_id', type=str)
     return get_task_subtasks(task_id)
 
 ## Add give permission to collaborator
-@app.route("/team_update",methods=["POST","DELETE"])     # required user_id, user_password, task_id, task_editor
-def editor_add_edit_delete_operation():
-    auth_editor=request.json
+@app.route("/team_update",methods=["POST","DELETE","PUT"])   # http://127.0.0.1:8080/team_update
+def editor_add_edit_delete_operation():                   # required user_id, user_password, task_id, task_editor
+    auth_editor=request.json                                    
     return editor_add_edit_delete(auth_editor,request.method)
 
-@app.route("/status_comment",methods=["PUT"])     # required user_id, user_password, task_id, task_status,task_comment
-def status_comment_edit_operation():
+@app.route("/status_comment",methods=["PUT"])                # http://127.0.0.1:8080/status_comment
+def status_comment_edit_operation(): # required user_id, user_password, task_id, task_status,task_comment
     auth_editor=request.json
-    return status_comment_edit_creator_editor(auth_editor)
+    return status_comment_edit_creator_editor_dynamic(auth_editor)
 
 
-    
+
+
+## adding suggestions
+@app.route("/suggestion",methods=["GET"])                # http://127.0.0.1:8080/suggestion
+def stggest(): # required user_id, user_password, task_id, task_status,task_comment
+    return suggestion_based_on_real_time()
+     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
