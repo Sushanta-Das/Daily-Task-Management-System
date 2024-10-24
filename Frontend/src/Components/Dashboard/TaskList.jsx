@@ -38,8 +38,19 @@ export default function TaskList({ tasks, setTasks, user }) {
     setOpenEdit(true);
     handleClose();
   };
-  const showSuggestions = () => {
-    toast.success("Task completed! Take a short walk for a break.", {
+  const showSuggestions = async () => {
+    // GET http://127.0.0.1:8080/suggestion
+    //fetch suggestions from backend
+    const response = await fetch("http://localhost:8080/suggestion", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log(data.return);
+
+    toast.success(data.return, {
       position: "top-right", // Customize position
       autoClose: 5000, // Close after 5 seconds
       hideProgressBar: false,

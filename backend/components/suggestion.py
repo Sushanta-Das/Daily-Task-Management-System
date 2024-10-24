@@ -21,7 +21,7 @@ def suggestion_based_on_real_time():
         return jsonify({
         "status":200,
         "message": "got suggestion successfully.",
-        "return": [alert_message]
+        "return": alert_message
         }),200
     except Exception as e:
         return db_error(e,400)

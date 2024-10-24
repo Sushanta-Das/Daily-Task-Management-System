@@ -224,7 +224,7 @@ export const EditForm = ({ taskId, tasks, setTasks, user, setOpenEdit }) => {
           updateTask();
         }}
       >
-        Edit
+        Save
       </Button>
     </div>
   );
