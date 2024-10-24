@@ -1,4 +1,6 @@
 import * as React from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect, useRef } from "react";
 import {
   Typography,
@@ -35,6 +37,17 @@ export default function TaskList({ tasks, setTasks, user }) {
     console.log(task_id + "in tasklist");
     setOpenEdit(true);
     handleClose();
+  };
+  const showSuggestions = () => {
+    toast.success("Task completed! Take a short walk for a break.", {
+      position: "top-right", // Customize position
+      autoClose: 5000, // Close after 5 seconds
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   };
 
   const handleDelete = () => {
@@ -73,6 +86,7 @@ export default function TaskList({ tasks, setTasks, user }) {
   };
   const handleStatusChange = (task_id, status) => {
     console.log(task_id, status);
+
     const newTasks = tasks.map((task) => {
       if (task.task_id === task_id) {
         task.task_status = status;
@@ -106,7 +120,13 @@ export default function TaskList({ tasks, setTasks, user }) {
       },
       body: JSON.stringify(taskData),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 200 && status === "Done") {
+          console.log("Status updated successfully");
+          showSuggestions();
+        }
+        res.json();
+      })
       .then((data) => {
         console.log(data);
       })
@@ -121,7 +141,6 @@ export default function TaskList({ tasks, setTasks, user }) {
         width: "100%",
         bgcolor: "background.paper",
         maxWidth: "800px",
-        margin: "0 auto",
       }}
     >
       {tasks.length > 0 &&

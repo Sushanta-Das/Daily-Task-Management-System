@@ -1,9 +1,10 @@
 .navbar {
     background-color: #333;
-    padding: 1rem;
+    margin: 8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
 }
 
 .navbar-logo h2 {

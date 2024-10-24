@@ -7,6 +7,8 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { CurrentTasks } from "./CurrentTasks";
 import { PreviousTasks } from "./PreviousTasks";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import styles
 import "./dashboard.css";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -81,7 +83,16 @@ export default function Dashboard() {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box
+      sx={{
+        width: "100%",
+        padding: "6vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
@@ -102,6 +113,7 @@ export default function Dashboard() {
       <CustomTabPanel value={value} index={2}>
         kanban board
       </CustomTabPanel>
+      <ToastContainer />
     </Box>
   );
 }

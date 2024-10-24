@@ -34,7 +34,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav>
+      <nav style={{ margin: "2vw" }}>
         <div>
           <ul style={{ display: "flex", gap: "2vw" }}>
             <Button variant="contained" color="success" onClick={openSignUp}>

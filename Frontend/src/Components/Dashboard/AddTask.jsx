@@ -10,6 +10,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import LowPriorityIcon from "@mui/icons-material/ArrowDownward";
 import MediumPriorityIcon from "@mui/icons-material/ArrowForward";
 import HighPriorityIcon from "@mui/icons-material/ArrowUpward";
+
 // Add a new task
 export const AddTask = ({ tasks, setTasks, setOpen, user }) => {
   const validateForm = () => {
